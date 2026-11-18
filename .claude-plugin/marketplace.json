@@ -1,0 +1,12 @@
+{
+  "name": "security-tools",
+  "owner": { "name": "Sagat Soluções" },
+  "description": "Ferramentas de segurança para os projetos da equipe",
+  "plugins": [
+    {
+      "name": "web-security-audit",
+      "source": "./",
+      "description": "Auditoria de segurança de sistemas web com checklist OWASP, varredura de código e catálogo de CVEs"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "web-security-audit",
+  "version": "0.1.0",
+  "description": "Auditoria de segurança de sistemas web: XSS, CSRF, SSRF, SQLi, XXE, autenticação e 2FA, RLS, IDOR, rate limit, APIs, configuração de servidor e CVEs recentes.",
+  "author": { "name": "Sagat Soluções" },
+  "license": "MIT",
+  "repository": "https://github.com/gitsagat/web-security-audit",
+  "homepage": "https://github.com/gitsagat/web-security-audit",
+  "keywords": ["security", "owasp", "audit", "xss", "sqli", "idor", "rls", "cve"]
+}
