@@ -64,12 +64,103 @@ O último comando deve mostrar `web-security-audit@security-tools` com `Status: 
 
 ### Usar
 
-Depois de instalar, **abra uma conversa nova** no Claude Code (a conversa que já estava aberta não enxerga o plugin). Com o Claude Code aberto na pasta do projeto, digite na caixa de mensagem:
+Depois de instalar, **abra uma conversa nova** no Claude Code (a conversa que já estava aberta não enxerga o plugin). Com o Claude Code aberto na pasta do projeto, digite na caixa de mensagem `/web-security-audit:audit` seguido do que quer auditar.
+
+Audite por partes: um tema por vez gera um relatório mais fundo do que pedir tudo de uma vez.
+
+#### Visão geral
+
+```text
+/web-security-audit:audit reconhecimento: stack, rotas, áreas públicas e modelo de permissões
+/web-security-audit:audit varredura automática do código com o scan_code.sh
+/web-security-audit:audit auditoria completa, priorizando os riscos mais graves
+```
+
+#### Dependências e cadeia de suprimentos
 
 ```text
 /web-security-audit:audit dependências contra CVEs
+/web-security-audit:audit lockfile, scripts de instalação e GitHub Actions
+/web-security-audit:audit segredos no código e no histórico do git
+```
+
+#### Permissões, IDOR e RLS
+
+```text
 /web-security-audit:audit IDOR nas rotas da API
+/web-security-audit:audit isolamento entre clientes (multi-tenant)
+/web-security-audit:audit mass assignment nos serializers e formulários
+/web-security-audit:audit funções de admin acessíveis por usuário comum
+/web-security-audit:audit políticas RLS do Supabase/PostgreSQL
+/web-security-audit:audit acesso a arquivos e mídia privada
+```
+
+#### Autenticação e 2FA
+
+```text
 /web-security-audit:audit login e 2FA
+/web-security-audit:audit recuperação de senha e troca de e-mail
+/web-security-audit:audit sessão, cookies e logout
+/web-security-audit:audit JWT e tokens de API
+/web-security-audit:audit SSO com SAML ou OIDC
+```
+
+#### Injeções
+
+```text
+/web-security-audit:audit SQL injection
+/web-security-audit:audit XSS nos templates e no front-end
+/web-security-audit:audit XXE nos parsers de XML e documentos
+/web-security-audit:audit injeção de comando, de template e desserialização
+/web-security-audit:audit path traversal em upload e download
+```
+
+#### Requisições e APIs
+
+```text
+/web-security-audit:audit CSRF e CORS
+/web-security-audit:audit SSRF em webhooks, importação por URL e geração de PDF
+/web-security-audit:audit assinatura dos webhooks recebidos
+/web-security-audit:audit rate limit em login, OTP e envio de mensagens
+/web-security-audit:audit condição de corrida em pagamento, cupom e estoque
+/web-security-audit:audit documentação e rotas de debug expostas
+```
+
+#### Configuração e exposição de dados
+
+```text
+/web-security-audit:audit configuração de produção do framework
+/web-security-audit:audit portas e serviços expostos no docker-compose
+/web-security-audit:audit dados pessoais em logs, respostas e exportações
+/web-security-audit:audit tratamento de erros que libera acesso
+```
+
+#### Teste no ar (só em site que você pode testar)
+
+```text
+/web-security-audit:audit headers, cookies e TLS em https://<seu-site>
+/web-security-audit:audit caminhos expostos (.git, .env, swagger) em https://<seu-site>
+/web-security-audit:audit IDOR com duas contas de teste em https://<seu-site>
+```
+
+#### Recorte específico
+
+```text
+/web-security-audit:audit o arquivo <caminho/do/arquivo>
+/web-security-audit:audit a pasta <caminho/da/pasta>
+/web-security-audit:audit as mudanças ainda não commitadas
+/web-security-audit:audit as mudanças desta branch em relação à main
+```
+
+#### Depois da auditoria
+
+Na mesma conversa, sem o prefixo:
+
+```text
+salva o relatório em docs/security-audit/<nome>.md
+corrige o achado 1 e escreve um teste que prove a correção
+explica o achado 3 com um exemplo de ataque
+monta um plano de correção por prioridade
 ```
 
 ### Atualizar
