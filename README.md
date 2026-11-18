@@ -30,14 +30,41 @@ skills/audit/
 
 ## Claude Code
 
-Instalar:
+A instalação tem dois caminhos. Os comandos são parecidos, mas são digitados em lugares diferentes:
+
+| Onde você digita | Comando começa com | Exemplo |
+| --- | --- | --- |
+| Na caixa de mensagem do Claude Code (terminal ou VS Code) | `/plugin` | `/plugin install ...` |
+| No terminal do sistema (bash, zsh, WSL) | `claude plugin` | `claude plugin install ...` |
+
+Comando com `/` no começo **não funciona no bash**, e `claude plugin` **não funciona na caixa de mensagem**.
+
+### Caminho 1: dentro do Claude Code
+
+Na caixa de mensagem do Claude Code, um comando por vez:
 
 ```text
 /plugin marketplace add gitsagat/web-security-audit
 /plugin install web-security-audit@security-tools
 ```
 
-Usar, com o Claude Code aberto na pasta do projeto:
+Se aparecer `/plugin isn't available in this environment`, a sua versão (comum na extensão do VS Code) não tem esse comando. Use o caminho 2.
+
+### Caminho 2: pelo terminal
+
+No terminal do sistema (no Windows, o terminal do WSL):
+
+```bash
+claude plugin marketplace add gitsagat/web-security-audit
+claude plugin install web-security-audit@security-tools
+claude plugin list
+```
+
+O último comando deve mostrar `web-security-audit@security-tools` com `Status: ✔ enabled`. Se aparecer `claude: command not found`, veja [Problemas comuns](#problemas-comuns).
+
+### Usar
+
+Depois de instalar, **abra uma conversa nova** no Claude Code (a conversa que já estava aberta não enxerga o plugin). Com o Claude Code aberto na pasta do projeto, digite na caixa de mensagem:
 
 ```text
 /web-security-audit:audit dependências contra CVEs
@@ -45,7 +72,9 @@ Usar, com o Claude Code aberto na pasta do projeto:
 /web-security-audit:audit login e 2FA
 ```
 
-Atualizar: `/plugin marketplace update security-tools`.
+### Atualizar
+
+Na caixa de mensagem: `/plugin marketplace update security-tools`. Pelo terminal: `claude plugin marketplace update security-tools`.
 
 ## Codex (OpenAI)
 
@@ -85,6 +114,36 @@ bash ~/web-security-audit/skills/audit/scripts/check_headers.sh https://site-aut
 Rode o `scan_code.sh` de dentro da pasta do projeto. Ele lista candidatos, não vulnerabilidades: cada linha precisa ser conferida. O `check_headers.sh` só lê, mas use só em site que você pode testar. `INSECURE=1` antes do comando aceita certificado autoassinado.
 
 Os scripts são bash: Linux, macOS, WSL ou Git Bash. No Windows, use o WSL.
+
+## Problemas comuns
+
+| Mensagem | O que aconteceu | Como resolver |
+| --- | --- | --- |
+| `/plugin isn't available in this environment` | A sua versão do Claude Code (em geral a extensão do VS Code) não tem o comando `/plugin` | Instalar pelo terminal: [caminho 2](#caminho-2-pelo-terminal) |
+| `-bash: /plugin: No such file or directory` | Um comando do Claude Code foi digitado no bash | No terminal, use `claude plugin ...` em vez de `/plugin ...` |
+| `claude: command not found` | O CLI do Claude Code não está instalado no terminal; a extensão do VS Code não instala esse comando | Ver abaixo |
+| `/web-security-audit:audit` não aparece | A conversa foi aberta antes da instalação | Abrir uma conversa nova; conferir com `claude plugin list` |
+| A skill aparece duas vezes | Há uma cópia manual antiga em `~/.claude/skills/` | Apagar a cópia manual e ficar só com o plugin |
+
+### `claude: command not found`
+
+Escolha uma das opções.
+
+Instalar o CLI oficial:
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Ou, se você já usa a extensão do VS Code no WSL ou num servidor remoto, usar o executável que vem dentro dela:
+
+```bash
+echo 'alias claude="$(ls -d ~/.vscode-server/extensions/anthropic.claude-code-*/resources/native-binary/claude | sort -V | tail -1)"' >> ~/.bashrc
+source ~/.bashrc
+claude --version
+```
+
+Com o VS Code instalado direto no Linux ou no macOS (sem WSL), a pasta é `~/.vscode/extensions/` em vez de `~/.vscode-server/extensions/`.
 
 ## Regras
 
