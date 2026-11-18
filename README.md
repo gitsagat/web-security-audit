@@ -1,6 +1,6 @@
 # web-security-audit
 
-Plugin do Claude Code com uma skill de auditoria de segurança para sistemas web, de qualquer stack: Django, Flask/FastAPI, Node/Express/Next.js, Spring, Laravel/PHP, Rails, Supabase.
+Skill de auditoria de segurança para sistemas web, de qualquer stack: Django, Flask/FastAPI, Node/Express/Next.js, Spring, Laravel/PHP, Rails, Supabase.
 
 Cobre:
 
@@ -15,106 +15,88 @@ Cobre:
 
 Base: OWASP Top 10:2025, OWASP API Security Top 10:2023, OWASP ASVS 5.0, CWE Top 25, catálogo KEV da CISA.
 
+Segue o formato aberto [Agent Skills](https://agentskills.io): funciona no Claude Code, no Codex da OpenAI e em outros agentes que leem `SKILL.md`. Os scripts também rodam sem IA.
+
 ## Conteúdo
 
 ```text
 skills/audit/
-├── SKILL.md                         roteiro da auditoria e formato do relatório
-├── references/
-│   ├── xss-csrf-ssrf.md
-│   ├── injection-sqli-xxe.md
-│   ├── auth-2fa.md
-│   ├── authz-rls-idor.md
-│   ├── rate-limit-api.md
-│   ├── server-config-exposure.md
-│   ├── cves.md                      catálogo de CVEs e incidentes de supply chain
-│   └── sources.md                   fontes primárias e ferramentas
+├── SKILL.md                 roteiro da auditoria e formato do relatório
+├── references/              checklist por tema + catálogo de CVEs + fontes
 └── scripts/
-    ├── scan_code.sh                 busca padrões perigosos no código
-    └── check_headers.sh             checagem só de leitura de um alvo no ar
+    ├── scan_code.sh         busca padrões perigosos no código
+    └── check_headers.sh     checagem só de leitura de um site no ar
 ```
 
-## Instalação
+## Claude Code
 
-Este repositório é ao mesmo tempo o marketplace (`security-tools`) e o plugin (`web-security-audit`).
-
-### Para você, em qualquer projeto
-
-Dentro do Claude Code:
+Instalar:
 
 ```text
 /plugin marketplace add gitsagat/web-security-audit
 /plugin install web-security-audit@security-tools
 ```
 
-### Em um projeto, para todo o time
+Usar, com o Claude Code aberto na pasta do projeto:
 
-No `.claude/settings.json` versionado do projeto:
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "security-tools": {
-      "source": { "source": "github", "repo": "gitsagat/web-security-audit" }
-    }
-  },
-  "enabledPlugins": {
-    "web-security-audit@security-tools": true
-  }
-}
+```text
+/web-security-audit:audit dependências contra CVEs
+/web-security-audit:audit IDOR nas rotas da API
+/web-security-audit:audit login e 2FA
 ```
 
-Cada pessoa, uma vez por clone:
+Atualizar: `/plugin marketplace update security-tools`.
+
+## Codex (OpenAI)
+
+Instalar:
 
 ```bash
-claude plugin install web-security-audit@security-tools --scope project
+git clone https://github.com/gitsagat/web-security-audit.git ~/web-security-audit
+mkdir -p ~/.codex/skills
+cp -r ~/web-security-audit/skills/audit ~/.codex/skills/web-security-audit
 ```
 
-### Teste local, sem GitHub
+Usar, com o Codex aberto na pasta do projeto:
+
+```text
+$audit dependências contra CVEs
+$audit IDOR nas rotas da API
+```
+
+Atualizar: `cd ~/web-security-audit && git pull`, depois repetir o `cp -r`.
+
+## Outros agentes
+
+Cursor, GitHub Copilot, Gemini CLI e outros leem o mesmo formato. Copie `skills/audit` para a pasta de skills do agente (veja a documentação dele) e peça em texto: "usa a skill web-security-audit para revisar o login".
+
+## Chat (ChatGPT, Claude.ai)
+
+Anexe `skills/audit/SKILL.md`, a referência do tema (por exemplo `references/authz-rls-idor.md`) e o código a revisar. Peça: "Siga o SKILL.md e a referência para auditar este código."
+
+## Sem IA
 
 ```bash
-claude plugin validate . --strict
-claude plugin marketplace add /caminho/para/web-security-audit
-claude plugin install web-security-audit@security-tools
+git clone https://github.com/gitsagat/web-security-audit.git ~/web-security-audit
+bash ~/web-security-audit/skills/audit/scripts/scan_code.sh .
+bash ~/web-security-audit/skills/audit/scripts/check_headers.sh https://site-autorizado
 ```
 
-Ou só para uma sessão: `claude --plugin-dir /caminho/para/web-security-audit`.
+Rode o `scan_code.sh` de dentro da pasta do projeto. Ele lista candidatos, não vulnerabilidades: cada linha precisa ser conferida. O `check_headers.sh` só lê, mas use só em site que você pode testar. `INSECURE=1` antes do comando aceita certificado autoassinado.
 
-## Uso com o Claude Code
-
-O comando é `/web-security-audit:audit`. Também dá para pedir em linguagem natural no projeto:
-
-- "audita a segurança deste sistema"
-- "procura IDOR nas views de API"
-- "confere as políticas RLS do Supabase"
-- "cruza as dependências com CVEs recentes"
-
-A skill também é acionada sozinha quando a conversa fala de XSS, CSRF, SSRF, SQL injection, XXE, 2FA, RLS, IDOR, rate limit, headers de segurança ou exposição de dados.
-
-## Uso sem o Claude Code
-
-Os scripts rodam sozinhos, em qualquer projeto:
-
-```bash
-bash skills/audit/scripts/scan_code.sh /caminho/do/projeto
-bash skills/audit/scripts/check_headers.sh https://alvo-autorizado
-INSECURE=1 bash skills/audit/scripts/check_headers.sh https://dev.local
-```
-
-`scan_code.sh` lista candidatos, não vulnerabilidades: cada linha precisa ser confirmada lendo o fluxo de dados. `check_headers.sh` só faz requisições de leitura, mas só deve ser apontado para sistemas que você tem autorização para testar.
+Os scripts são bash: Linux, macOS, WSL ou Git Bash. No Windows, use o WSL.
 
 ## Regras
 
-- Teste dinâmico só contra alvo autorizado. Nada destrutivo.
-- **Relatórios de auditoria não entram neste repositório.** Eles descrevem falhas reais de um sistema e ficam no projeto auditado, fora do git. O `.gitignore` já recusa `relatorios/` e `reports/`.
-- A skill é genérica. Regras específicas de um sistema (modelo de tenant, papéis) ficam no `CLAUDE.md` daquele projeto.
+- Audite por partes (dependências, IDOR, login, webhooks, injeções, configuração). Pedir "tudo" de uma vez gera relatório raso.
+- Teste em site no ar só com autorização. Nada destrutivo.
+- Relatório de auditoria fica na sua máquina, fora do git: crie uma pasta no projeto e ponha no `.gitignore`.
 
 ## Manutenção
 
-- `references/cves.md` envelhece. Ao atualizar, partir das fontes de `references/sources.md` (advisory do mantenedor, OSV, CISA KEV), não de agregadores. Item sem confirmação no advisory oficial leva a marca †.
-- Subir `version` em `.claude-plugin/plugin.json` a cada mudança, para os projetos receberem a atualização.
-- O workflow `self-test` valida sintaxe, ShellCheck e os JSON do plugin.
+- `references/cves.md` envelhece: atualize a partir de `references/sources.md`.
+- Suba `version` em `.claude-plugin/plugin.json` a cada mudança na skill.
 
 ## Licença
 
-MIT — veja [LICENSE](LICENSE). Contribuições com CVEs novas, padrões de busca e correções são bem-vindas por pull request.
+MIT — veja [LICENSE](LICENSE).

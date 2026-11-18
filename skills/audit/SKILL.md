@@ -24,6 +24,8 @@ Roteiro para encontrar vulnerabilidades em um sistema web, por revisão de códi
 
 ### 2. Varredura automática
 
+Os scripts ficam em `scripts/`, na mesma pasta deste `SKILL.md`. No Claude Code, `${CLAUDE_SKILL_DIR}` já vira esse caminho. Em outros agentes (Codex, Cursor, Copilot, Gemini CLI), troque `${CLAUDE_SKILL_DIR}` pelo caminho da pasta onde este arquivo está, por exemplo `~/.codex/skills/web-security-audit`.
+
 ```bash
 bash ${CLAUDE_SKILL_DIR}/scripts/scan_code.sh <raiz-do-projeto>
 ```
